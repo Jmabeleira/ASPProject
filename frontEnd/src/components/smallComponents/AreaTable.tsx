@@ -20,7 +20,7 @@ import {
   Toolbar,
   ToolbarButton,
 } from "@mui/x-data-grid";
-import { sendPutRequest, sendDeleteRequest } from "../../util/axiosUtil";
+import { sendPutRequest, sendDeleteRequest,sendRequest,sendGetRequest } from "../../util/axiosUtil";
 import AreaForm from "../Forms/AreaForm";
 import {
   Dialog,
