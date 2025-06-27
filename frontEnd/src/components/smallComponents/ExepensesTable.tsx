@@ -116,7 +116,7 @@ export default function FullFeaturedCrudGrid({ data }: { data: GridRowsProp }) {
   const handleDeleteClick = (id: GridRowId) => async () => {
     const rowToDelete = rows.find((row) => row.id === id);
     const body = {
-      userId: getCurrentUser().id || 1,
+      userid: getCurrentUser().id || 1,
       expenseId: rowToDelete?.id,
     };
     console.log("body", body);
