@@ -47,7 +47,7 @@ function EditToolbar({ setRows }: { setRows: any }) {
   const handleAddArea = (newArea: any) => {
     setRows((prev: GridRowsProp) => [
       ...prev,
-      { ...newArea, id: newArea.areaId || newArea.id, isNew: true },
+      { ...newArea, id: newArea.id || newArea.id, isNew: true },
     ]);
     setOpen(false);
   };
