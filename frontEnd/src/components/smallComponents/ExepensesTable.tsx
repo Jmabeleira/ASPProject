@@ -27,7 +27,7 @@ import {
   Toolbar,
   ToolbarButton,
   GridToolbarContainer,
-  GridFilterInputDateProps
+  GridFilterInputDateProps,
 } from "@mui/x-data-grid";
 import { sendDeleteRequest } from "../../util/axiosUtil";
 import {
@@ -67,7 +67,12 @@ function EditToolbar({ setRows }: { setRows: any }) {
         </Tooltip>
       </Toolbar>
 
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>Add Expense</DialogTitle>
         <DialogContent>
           <ExpenseForm onAdd={handleAddExpense} />
@@ -119,7 +124,10 @@ export default function FullFeaturedCrudGrid({ data }: { data: GridRowsProp }) {
 
     if (rowToDelete) {
       try {
-        const response = await sendDeleteRequest(`https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/expenses`, body);
+        const response = await sendDeleteRequest(
+          `https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/expenses`,
+          body
+        );
 
         if (response.status !== 200) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -127,20 +135,21 @@ export default function FullFeaturedCrudGrid({ data }: { data: GridRowsProp }) {
 
         console.log("Row deleted successfully:", response.data);
 
-        const userMails = await sendRequest(
-          "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/companyuser/user/getUserMailsByArea",
-          localStorage.getItem("areaId") || 1
-        );
+        let url: string =
+          "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/companyuser/user/getUserMailsByArea" +
+          "?areaId=" +
+          localStorage.getItem("areaId");
+        const userMails = await sendGetRequest(url);
 
         const payload = {
           expenseId: rowToDelete?.id,
-          status: 'deleted'
+          status: "deleted",
         };
 
         if (userMails.status === 200 || userMails.status === 201) {
           const mailPayload = {
             emails: userMails.data.data,
-            data: payload
+            data: payload,
           };
           const ok = await sendRequest(
             "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/notify",
@@ -188,10 +197,11 @@ export default function FullFeaturedCrudGrid({ data }: { data: GridRowsProp }) {
       }
       console.log("Row updated successfully:", response.data);
 
-      const userMails = await sendRequest(
-        "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/companyuser/user/getUserMailsByArea",
-        localStorage.getItem("areaId") || 1
-      );
+      let url: string =
+        "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/companyuser/user/getUserMailsByArea" +
+        "?areaId=" +
+        localStorage.getItem("areaId");
+      const userMails = await sendGetRequest(url);
 
       const payload = {
         expenseId: newRow.id,
@@ -200,13 +210,13 @@ export default function FullFeaturedCrudGrid({ data }: { data: GridRowsProp }) {
         purchaseDate: newRow.purchaseDate,
         registeredDate: newRow.createdAt,
         userId: newRow.createdBy,
-        status: 'updated'
+        status: "updated",
       };
 
       if (userMails.status === 200 || userMails.status === 201) {
         const mailPayload = {
           emails: userMails.data.data,
-          data: payload
+          data: payload,
         };
         const ok = await sendRequest(
           "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/notify",

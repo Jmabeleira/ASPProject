@@ -34,7 +34,9 @@ import { getCurrentUser } from "../../util/cacheManager";
 declare module "@mui/x-data-grid" {
   interface ToolbarPropsOverrides {
     setRows: (updater: (old: GridRowsProp) => GridRowsProp) => void;
-    setRowModesModel: (updater: (old: GridRowModesModel) => GridRowModesModel) => void;
+    setRowModesModel: (
+      updater: (old: GridRowModesModel) => GridRowModesModel
+    ) => void;
   }
 }
 
@@ -60,7 +62,12 @@ function EditToolbar({ setRows }: { setRows: any }) {
           </ToolbarButton>
         </Tooltip>
       </Toolbar>
-      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>Add Area</DialogTitle>
         <DialogContent>
           <AreaForm onAdd={handleAddArea} />
@@ -73,12 +80,18 @@ function EditToolbar({ setRows }: { setRows: any }) {
   );
 }
 
-export default function FullFeaturedAreasGrid({ data }: { data: GridRowsProp }) {
+export default function FullFeaturedAreasGrid({
+  data,
+}: {
+  data: GridRowsProp;
+}) {
   const user = getCurrentUser();
   const userCompanyId = user?.companyId;
 
   const [rows, setRows] = React.useState<GridRowsProp>([]);
-  const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
+  const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
+    {}
+  );
 
   React.useEffect(() => {
     if (userCompanyId) {
@@ -89,7 +102,10 @@ export default function FullFeaturedAreasGrid({ data }: { data: GridRowsProp }) 
   }, [data, userCompanyId]);
 
   // Evita cerrar la edición al perder foco
-  const handleRowEditStop: GridEventListener<"rowEditStop"> = (params, event) => {
+  const handleRowEditStop: GridEventListener<"rowEditStop"> = (
+    params,
+    event
+  ) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true;
     }
@@ -115,106 +131,41 @@ export default function FullFeaturedAreasGrid({ data }: { data: GridRowsProp }) 
   };
 
   const handleDeleteClick = (id: GridRowId) => async () => {
-      const rowToDelete = rows.find((row) => row.id === id);
-      const body = {
-        userId: getCurrentUser().id || 1,
-        expenseId: rowToDelete?.id,
-      };
-      console.log("body", body);
-  
-      if (rowToDelete) {
-        try {
-          const response = await sendDeleteRequest(`https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/expenses`, body);
-  
-          if (response.status !== 200) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-  
-          console.log("Row deleted successfully:", response.data);
-  
-          const userMails = await sendRequest(
-            "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/companyuser/user/getUserMailsByArea",
-            localStorage.getItem("areaId") || 1
-          );
-  
-          const payload = {
-            expenseId: rowToDelete?.id,
-            status: 'deleted'
-          };
-  
-          if (userMails.status === 200 || userMails.status === 201) {
-            const mailPayload = {
-              emails: userMails.data.data,
-              data: payload
-            };
-            const ok = await sendRequest(
-              "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/notify",
-              mailPayload
-            );
-          }
-        } catch (error) {
-          console.error("Error deleting row:", error);
-        }
-      }
-  
-      setRows(rows.filter((row) => row.id !== id));
-    };
-
-  // Al guardar edición, hace PUT
-  const processRowUpdate = async (newRow: GridRowModel) => {
-    // REEMPLAZA esta URL por tu endpoint de UPDATE
-    const UPDATE_URL = "https://TU_BACKEND/api/areas";
+    const rowToDelete = rows.find((row) => row.id === id);
     const body = {
-      userId: getCurrentUser()?.id,
-      areaId: newRow.id,
-      name: newRow.name,
-      description: newRow.description,
+      userId: getCurrentUser().id || 1,
+      expenseId: rowToDelete?.id,
     };
-    try {
-      await sendPutRequest(UPDATE_URL, body);
-      return { ...newRow, isNew: false };
-    } catch (err) {
-      console.error("Error actualizando área:", err);
-      throw err; // para que DataGrid muestre el error
-    }
-  };
+    console.log("body", body);
 
-  const processRowUpdate = async (newRow: GridRowModel) => {
-      const updatedRow = { ...newRow, isNew: false };
-      const body = {
-      userId: getCurrentUser()?.id,
-      areaId: newRow.id,
-      name: newRow.name,
-      description: newRow.description,
-    };
-      console.log("body", body);
+    if (rowToDelete) {
       try {
-        const response = await sendPutRequest(
-          "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/expenses",
+        const response = await sendDeleteRequest(
+          `https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/companyuser/area`,
           body
         );
+
         if (response.status !== 200) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        console.log("Row updated successfully:", response.data);
-  
-        const userMails = await sendRequest(
-          "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/companyuser/user/getUserMailsByArea",
-          localStorage.getItem("areaId") || 1
-        );
-  
+
+        console.log("Row deleted successfully:", response.data);
+
+        let url: string =
+          "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/companyuser/user/getUserMailsByArea" +
+          "?areaId=" +
+          localStorage.getItem("areaId");
+        const userMails = await sendGetRequest(url);
+
         const payload = {
-          userId: getCurrentUser()?.id,
-          areaId: newRow.id,
-          name: newRow.name,
-          description: newRow.description,
-          status: 'updated'
+          expenseId: rowToDelete?.id,
+          status: "deleted",
         };
-  
+
         if (userMails.status === 200 || userMails.status === 201) {
           const mailPayload = {
             emails: userMails.data.data,
-            data: payload
+            data: payload,
           };
           const ok = await sendRequest(
             "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/notify",
@@ -222,18 +173,68 @@ export default function FullFeaturedAreasGrid({ data }: { data: GridRowsProp }) 
           );
         }
       } catch (error) {
-        console.error("Error updating row:", error);
+        console.error("Error deleting row:", error);
       }
-      setRows((prevRows) =>
-        prevRows.map((row) => (row.id === newRow.id ? updatedRow : row))
+    }
+
+    setRows(rows.filter((row) => row.id !== id));
+  };
+
+  const processRowUpdate = async (newRow: GridRowModel) => {
+    const updatedRow = { ...newRow, isNew: false };
+    const body = {
+      userId: getCurrentUser()?.id,
+      areaId: newRow.id,
+      name: newRow.name,
+      description: newRow.description,
+    };
+    console.log("body", body);
+    try {
+      const response = await sendRequest(
+        "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/companyuser/area/update",
+        body
       );
-  
-      return updatedRow;
-    };
-  
-    const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
-      setRowModesModel(newRowModesModel);
-    };
+      if (response.status !== 200) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      console.log("Row updated successfully:", response.data);
+
+      let url: string =
+        "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/companyuser/user/getUserMailsByArea" +
+        "?areaId=" +
+        localStorage.getItem("areaId");
+      const userMails = await sendGetRequest(url);
+      const payload = {
+        userId: getCurrentUser()?.id,
+        areaId: newRow.id,
+        name: newRow.name,
+        description: newRow.description,
+        status: "updated",
+      };
+
+      if (userMails.status === 200 || userMails.status === 201) {
+        const mailPayload = {
+          emails: userMails.data.data,
+          data: payload,
+        };
+        const ok = await sendRequest(
+          "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/notify",
+          mailPayload
+        );
+      }
+    } catch (error) {
+      console.error("Error updating row:", error);
+    }
+    setRows((prevRows) =>
+      prevRows.map((row) => (row.id === newRow.id ? updatedRow : row))
+    );
+
+    return updatedRow;
+  };
+
+  const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
+    setRowModesModel(newRowModesModel);
+  };
 
   const columns: GridColDef[] = [
     { field: "id", headerName: "ID", width: 90 },
