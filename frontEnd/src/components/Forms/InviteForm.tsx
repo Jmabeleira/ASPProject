@@ -90,8 +90,8 @@ function InviteForm() {
         if (response.status !== 200) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-
-        setAreas(response.data.data);
+        let responseData = response.data.data.filter((item: any) => item.isActive);
+        setAreas(responseData);
       } catch (error) {
         setStatus(prev => ({
           ...prev,
