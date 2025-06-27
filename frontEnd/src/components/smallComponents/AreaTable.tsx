@@ -134,7 +134,7 @@ export default function FullFeaturedAreasGrid({
     const rowToDelete = rows.find((row) => row.id === id);
     const body = {
       userId: getCurrentUser().id || 1,
-      expenseId: rowToDelete?.id,
+      areaId: rowToDelete?.id,
     };
     console.log("body", body);
 
