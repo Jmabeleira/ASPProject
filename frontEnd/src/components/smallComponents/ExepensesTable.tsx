@@ -29,7 +29,6 @@ import {
   GridToolbarContainer,
   GridFilterInputDateProps,
 } from "@mui/x-data-grid";
-import { sendDeleteRequest } from "../../util/axiosUtil";
 import {
   Dialog,
   DialogTitle,

@@ -275,13 +275,13 @@ export default function FullFeaturedAreasGrid({
         columns={columns}
         editMode="row"
         rowModesModel={rowModesModel}
-        onRowModesModelChange={setRowModesModel}
+        onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}
         processRowUpdate={processRowUpdate}
         slots={{ toolbar: EditToolbar }}
         slotProps={{ toolbar: { setRows, setRowModesModel } }}
         showToolbar
-        experimentalFeatures={{ newEditingApi: true }}
+
       />
     </Box>
   );
