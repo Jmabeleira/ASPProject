@@ -150,28 +150,6 @@ export default function FullFeaturedAreasGrid({
         }
 
         console.log("Row deleted successfully:", response.data);
-
-        let url: string =
-          "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/companyuser/user/getUserMailsByArea" +
-          "?areaId=" +
-          localStorage.getItem("areaId");
-        const userMails = await sendGetRequest(url);
-
-        const payload = {
-          expenseId: rowToDelete?.id,
-          status: "deleted",
-        };
-
-        if (userMails.status === 200 || userMails.status === 201) {
-          const mailPayload = {
-            emails: userMails.data.data,
-            data: payload,
-          };
-          const ok = await sendRequest(
-            "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/notify",
-            mailPayload
-          );
-        }
       } catch (error) {
         console.error("Error deleting row:", error);
       }
@@ -198,30 +176,6 @@ export default function FullFeaturedAreasGrid({
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       console.log("Row updated successfully:", response.data);
-
-      let url: string =
-        "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/companyuser/user/getUserMailsByArea" +
-        "?areaId=" +
-        localStorage.getItem("areaId");
-      const userMails = await sendGetRequest(url);
-      const payload = {
-        userId: getCurrentUser()?.id,
-        areaId: newRow.id,
-        name: newRow.name,
-        description: newRow.description,
-        status: "updated",
-      };
-
-      if (userMails.status === 200 || userMails.status === 201) {
-        const mailPayload = {
-          emails: userMails.data.data,
-          data: payload,
-        };
-        const ok = await sendRequest(
-          "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/notify",
-          mailPayload
-        );
-      }
     } catch (error) {
       console.error("Error updating row:", error);
     }
