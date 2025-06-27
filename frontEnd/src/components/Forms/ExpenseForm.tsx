@@ -86,11 +86,10 @@ function ExpenseForm({ onAdd }: { onAdd: (newExpense: any) => void }) {
         "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/expenses",
         payload
       );
+      
       if (response.status === 200 || response.status === 201) {
-        const userMails = await sendRequest(
-          "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/companyuser/user/getUserMailsByArea",
-          localStorage.getItem("areaId") || 1
-        );
+        let url: string = "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/companyuser/user/getUserMailsByArea" + "?areaId=" + localStorage.getItem("areaId");
+        const userMails = await sendGetRequest(url);
         if (userMails.status === 200 || userMails.status === 201) {
           const mailPayload = {
             emails: userMails.data.data,
