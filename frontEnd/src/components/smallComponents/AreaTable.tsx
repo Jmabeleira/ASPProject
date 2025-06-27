@@ -163,8 +163,8 @@ export default function FullFeaturedAreasGrid({
     const body = {
       userId: getCurrentUser()?.id,
       areaId: newRow.id,
-      name: newRow.name,
-      description: newRow.description,
+      AreaName: newRow.name,
+      AreaDescription: newRow.description,
     };
     console.log("body", body);
     try {
