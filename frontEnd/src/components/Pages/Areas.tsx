@@ -17,7 +17,7 @@ function AreaPage() {
         if (response.status != 200) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        let responseData = response.data.data;
+        let responseData = response.data.data.filter((item: any) => item.isActive);
         console.log("responseData", responseData);
         setData(responseData);
         setLoading(false);
