@@ -248,6 +248,9 @@ export default function FullFeaturedCrudGrid({ data }: { data: GridRowsProp }) {
       editable: true,
     },
     {
+      field: "categoryId", headerName: "CategoryId", width: 90
+    },
+    {
       field: "category",
       headerName: "Category",
       width: 180,
