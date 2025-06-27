@@ -8,8 +8,11 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Alert from "@mui/material/Alert";
+import { useNavigate } from "react-router-dom";
 
 function RegisterForm() {
+  const navigate = useNavigate();
+
   const [searchParams] = useSearchParams();
   const [post, setPost] = useState({
     id: "",
@@ -17,7 +20,7 @@ function RegisterForm() {
     email: "",
     password: "",
     companyId: "",
-    areaId: ""
+    areaId: "",
   });
   const [status, setStatus] = useState<{
     loading: boolean;
@@ -26,57 +29,64 @@ function RegisterForm() {
   }>({
     loading: false,
     error: null,
-    success: false
+    success: false,
   });
 
   useEffect(() => {
-    const token = searchParams.get('token');
-    const emailUser = searchParams.get('email');
-    const CompanyId = searchParams.get('id');
-    const AreaId = searchParams.get('areaId')
-  
-    if (token) setPost(prev => ({ ...prev, id: token }));
-    if (emailUser) setPost(prev => ({ ...prev, email: emailUser }));
-    if (CompanyId) setPost(prev => ({ ...prev, companyId: CompanyId }));
-    if (AreaId) setPost(prev => ({ ...prev, areaId: AreaId }));
+    const token = searchParams.get("token");
+    const emailUser = searchParams.get("email");
+    const CompanyId = searchParams.get("id");
+    const AreaId = searchParams.get("areaId");
+
+    if (token) setPost((prev) => ({ ...prev, id: token }));
+    if (emailUser) setPost((prev) => ({ ...prev, email: emailUser }));
+    if (CompanyId) setPost((prev) => ({ ...prev, companyId: CompanyId }));
+    if (AreaId) setPost((prev) => ({ ...prev, areaId: AreaId }));
   }, [searchParams]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     setStatus({ loading: true, error: null, success: false });
-    
+
     try {
-        const response = await axios.post("https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/companyuser/user", post);
+      const response = await axios.post(
+        "https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/companyuser/user",
+        post
+      );
       if (response.status === 200 || response.status === 201) {
-            setStatus({
-                loading: false,
-                error: null,
-                success: true
-            });
-        }
-    } catch (error) {
-        let errorMessage = "Failed to send invitation";
-        if (axios.isAxiosError(error)) {
-          errorMessage = error.response?.data?.message || error.message;
-        } else if (error instanceof Error) {
-          errorMessage = error.message;
-        }
-        
         setStatus({
           loading: false,
-          error: errorMessage,
-          success: false
+          error: null,
+          success: true,
         });
       }
-  }
+      //navigate to home
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
+    } catch (error) {
+      let errorMessage = "Failed to send invitation";
+      if (axios.isAxiosError(error)) {
+        errorMessage = error.response?.data?.message || error.message;
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+
+      setStatus({
+        loading: false,
+        error: errorMessage,
+        success: false,
+      });
+    }
+  };
 
   return (
     <Box sx={{ maxWidth: 400, mx: "auto" }}>
       <Typography variant="h4" component="h1" gutterBottom>
         Register
       </Typography>
-      
+
       {status.error && (
         <Alert severity="error" sx={{ mb: 2 }}>
           {status.error}
@@ -92,7 +102,7 @@ function RegisterForm() {
             value={post.name}
             onChange={(e) => setPost({ ...post, name: e.target.value })}
           />
-          
+
           <TextField
             required
             id="email"
@@ -102,7 +112,7 @@ function RegisterForm() {
             InputProps={{ readOnly: true }}
             fullWidth
           />
-          
+
           <TextField
             required
             id="password"
@@ -122,15 +132,11 @@ function RegisterForm() {
             InputProps={{ readOnly: true }}
             fullWidth
           />
-          
-          <input
-            type="hidden"
-            name="InviteId"
-            value={post.id}
-          />
 
-          <Button 
-            variant="contained" 
+          <input type="hidden" name="InviteId" value={post.id} />
+
+          <Button
+            variant="contained"
             type="submit"
             disabled={status.loading}
             startIcon={status.loading ? <CircularProgress size={20} /> : null}
