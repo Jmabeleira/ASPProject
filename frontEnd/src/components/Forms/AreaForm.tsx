@@ -10,12 +10,14 @@ import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import CircularProgress from "@mui/material/CircularProgress";
 import Autocomplete from "@mui/material/Autocomplete";
+import { getCurrentUser } from "../../util/cacheManager";
 
 function AreaForm({ onAdd }: { onAdd: (newArea: any) => void }) {
   const [post, setPost] = useState({
     AreaName: "",
     AreaDescription: "",
     companyId: "",
+    userId:getCurrentUser().id || 1, 
   });
   
   const [companies, setCompanies] = useState<any[]>([]);
