@@ -71,6 +71,7 @@ function ExpensesPage() {
       const cleanedData = responseData.map((item: any) => ({
         id: item.id,
         amount: item.amount,
+        categoryId: item.Category?.id || "",
         category: item.Category?.name || "",
         purchaseDate: item.purchaseDate ? new Date(item.purchaseDate) : null,
         createdAt: item.registeredDate ? new Date(item.registeredDate) : null,
