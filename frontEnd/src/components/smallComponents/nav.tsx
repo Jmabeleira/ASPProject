@@ -93,6 +93,7 @@ export default function PersistentDrawerLeft() {
     { text: "Invites", route: "/invites", roles: ["Admin", "Member"] },
     { text: "Home", route: "/home", roles:["Admin","Member"] },
     { text: "API Keys", route: "/apikeys-list", roles:["Member"] },
+    {text: "Audit", route: "/audit", roles:["Admin"]},
   ];
 
   const visibleMenuItems = isLoggedIn

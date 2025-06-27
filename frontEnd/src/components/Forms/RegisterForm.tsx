@@ -47,7 +47,7 @@ function RegisterForm() {
     setStatus({ loading: true, error: null, success: false });
     
     try {
-        const response = await axios.post("http://companyuser-env.eba-83m8u3k6.us-east-1.elasticbeanstalk.com/User/register", post);
+        const response = await axios.post("https://go4oygm3zi.execute-api.us-east-1.amazonaws.com/test/companyuser/user", post);
       if (response.status === 200 || response.status === 201) {
             setStatus({
                 loading: false,
